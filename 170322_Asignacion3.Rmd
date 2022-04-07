@@ -1,0 +1,103 @@
+---
+title: "170322_2"
+author: "Moreano-Acevedo"
+date: "17/3/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr) 
+library(readxl)
+library(ggplot2)
+library(Hmisc) 
+library(ggpubr)
+theme_set(theme_pubr())
+
+``` 
+
+```{r}
+arroz <- read_excel("C:/Users/morea/OneDrive - Universidad Nacional de Colombia/Documentos/UNAL/2022-1S/Computación Estadistica/RStudio/RStudio_CE/XPABLO.xlsx")
+arroz <- arroz [-c(6,7,16,17,18,19)]
+View(arroz)
+```
+
+# Gráficas
+
+## Por elemento 
+### Potasio (K), sodio (Na), hierro (Fe), cobre (Cu), zinc (Zn)
+
+```{r}
+  #Potasio
+  K = arroz$K
+  grupos <- cut(x = arroz$K, breaks = 5)
+  unique(grupos)
+  
+  kp <- ggplot(arroz, aes (x = Long, y = Lat, color=grupos)) + geom_point() +labs(color="Niveles de potasio") + scale_color_brewer(palette = "Dark2")
+  
+  #Sodio
+   Na = arroz$Na
+  grupos2 <- cut(x = arroz$Na, breaks = 4)
+  unique(grupos2)
+  
+  nap <- ggplot(arroz, aes (x = Long, y = Lat, color=grupos2)) + geom_point() +labs(color="Niveles de sodio") + scale_color_brewer(palette = "Paired")
+  
+  #Hierro
+   Fe = arroz$Fe
+  grupos3 <- cut(x = arroz$Fe, breaks = 7)
+  unique(grupos3)
+  
+  fep <- ggplot(arroz, aes (x = Long, y = Lat, color=grupos3)) + geom_point() +labs(color="Niveles de hierro") + scale_color_brewer(palette = "RdYlBu")
+  
+  #Cobre
+   Cu = arroz$Cu
+  grupos4 <- cut(x = arroz$Cu, breaks = 3)
+  unique(grupos4)
+  
+  cup <- ggplot(arroz, aes (x = Long, y = Lat, color=grupos4)) + geom_point() +labs(color="Niveles de cobre") + scale_color_brewer(palette = "PRGn")
+  
+  #Zinc
+   Zn = arroz$Zn
+  grupos5 <- cut(x = arroz$Zn, breaks = 4)
+  unique(grupos5)
+  
+  znp <- ggplot(arroz, aes (x = Long, y = Lat, color=grupos5)) + geom_point() +labs(color="Niveles de zinc") + scale_color_brewer(palette = "Set2")
+  
+  kp 
+  nap 
+  fep 
+  cup
+  znp
+```
+```{r}
+figure <- ggarrange(kp, nap, fep, labels =c("A","B","C"), ncol=2, nrow=2, legend="right")
+figure2 <- ggarrange(cup, znp, labels =c("D", "E"), ncol=2, nrow=2, legend="right")
+figure
+figure2
+```
+
+
+## Propiedades del suelo
+```{r}
+#CICE
+   CICE = arroz$CICE
+  grupos6 <- cut(x = arroz$CICE, breaks = 5)
+  unique(grupos6)
+  
+  CICEP <- ggplot(arroz, aes (x = Long, y = Lat, color=grupos6)) + geom_point() +labs(color="CICE") + scale_color_brewer(palette = "BrBG")
+  
+#CE
+   CE = arroz$CE
+  grupos7 <- cut(x = arroz$CE, breaks = 4)
+  unique(grupos7)
+  
+  CEP <- ggplot(arroz, aes (x = Long, y = Lat, color=grupos7)) + geom_point() +labs(color="CE") + scale_color_brewer(palette = "YlGn")
+```
+
+```{r}
+figure3 <- ggarrange(CICEP,CEP, labels =c("A","B"), ncol=2, nrow=1, legend="right")
+figure3
+```
+
+
+
