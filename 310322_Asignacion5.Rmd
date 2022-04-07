@@ -1,0 +1,80 @@
+---
+title: "310322_Asignacion5"
+author: "Moreano-Acevedo"
+date: "31/3/2022"
+output: html_document
+---
+
+Hallar el indice de Moran para las variables del archivo XPABLO para todos los vecinos
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readxl)
+library(ape)
+theme_set(theme_pubr())
+``` 
+
+```{r}
+arroz <- read_excel("C:/Users/morea/OneDrive - Universidad Nacional de Colombia/Documentos/UNAL/2022-1S/Computación Estadistica/RStudio/RStudio_CE/XPABLO.xlsx")
+arroz <- arroz [-c(6,7,16,17,18,19)]
+```
+
+
+### Generalidades
+
+##Matriz de distancia
+
+```{r}
+dist_matrix_arroz <- as.matrix(dist(cbind(arroz$Long,arroz$Lat)))
+which.max(dist_matrix_arroz) 
+max(dist_matrix_arroz) 
+min(dist_matrix_arroz) 
+dim(arroz)
+```
+##Inversa de la distancia
+
+```{r}
+dist_matrix_inv_arroz <- 1 / dist_matrix_arroz
+diag(dist_matrix_inv_arroz) <- 0
+```
+
+## Indice de Moran
+
+# Variables asociadas a nutrientes
+
+```{r}
+#K
+Moran.I(arroz$K, dist_matrix_inv_arroz) 
+```
+
+```{r}
+#Na
+Moran.I(arroz$Na, dist_matrix_inv_arroz) 
+```
+```{r}
+#Fe
+Moran.I(arroz$Fe, dist_matrix_inv_arroz) 
+```
+```{r}
+#Cu
+Moran.I(arroz$Cu, dist_matrix_inv_arroz) 
+```
+```{r}
+#Zn
+Moran.I(arroz$Zn, dist_matrix_inv_arroz) 
+```
+
+#Variables asociadas a propiedades del suelo
+```{r}
+#MO
+Moran.I(arroz$MO, dist_matrix_inv_arroz) 
+```
+```{r}
+#CICE
+Moran.I(arroz$CICE, dist_matrix_inv_arroz) 
+```
+```{r}
+#CE
+Moran.I(arroz$CE, dist_matrix_inv_arroz) 
+```
+
