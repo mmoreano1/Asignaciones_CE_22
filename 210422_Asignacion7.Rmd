@@ -1,0 +1,87 @@
+---
+title: "210422_Asignacion7"
+author: "Moreano-Acevedo"
+date: '2022-04-25'
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE, warning=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readxl)
+library(spatialreg)
+library(spdep)
+library(ape)
+library(sp)
+library(readxl)
+library(psych) 
+library(openxlsx)
+library(ggplot2)
+library(dplyr)
+```
+
+```{r}
+datos_xp <- read_excel("C:/Users/morea/OneDrive - Universidad Nacional de Colombia/Documentos/UNAL/2022-1S/Computación Estadistica/RStudio/RStudio_CE/XPABLO.xlsx")
+df <- datos_xp[-c(15,16,17,18,19)]
+```
+
+#Tomando la relación K/Na
+
+
+```{r}
+model_1 <- lm(K ~ Na, data = df) 
+summary(model_1)
+```
+
+$$Y_{K} = 0.156 + 0.374x_{Na}$$
+```{r}
+ggplot(df, aes(y = K, x = Na)) +
+  geom_point()+
+  geom_smooth(method='lm', se = F)
+```
+
+# Filtrado Na < 0.6
+
+```{r}
+df_2 <- df |>
+  filter(Na <= 0.6)
+df_2
+```
+```{r}
+model_2 <- lm(MO ~ Ca, data = df_2) 
+summary(model_2)
+```
+$$Y_{K} = 1,45 + 0.09x_{Na}$$
+
+```{r}
+res <- model_2$residuals
+hist(res)
+```
+```{r}
+ggplot(df_2, aes(Long, Lat))+
+  geom_point(size = abs(res))
+```
+
+
+#INDICE DE MORAN
+
+##1. Matriz de distancia
+
+```{r}
+matriz_dist <- as.matrix(dist(cbind(x = df_2$Long, y = df_2$Lat)))
+dim(matriz_dist)
+```
+##2. Inversa de la distancia
+
+```{r}
+m_dist_inv <- 1/matriz_dist
+m_dist_inv[is.infinite(m_dist_inv)] <- 0
+diag(m_dist_inv) <- 0
+```
+
+##3. Indice de moran
+
+```{r}
+Moran.I(res, m_dist_inv) 
+```
