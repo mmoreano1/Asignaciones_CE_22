@@ -1,0 +1,72 @@
+---
+title: "EXAMEN"
+author: "Moreano-Acevedo"
+date: "16/5/2022"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(readxl)
+library(ape)
+
+```
+```{r}
+datos<-read_excel("C:/Users/S340/Downloads/cosechaVARIEDADxy.xlsx")
+datos
+```
+
+### Tecnica de analisis de varianza
+```{r}
+mod1=aov(cosecha ~ variedad, data=datos)
+s_mod1=summary(mod1)
+p_valor = s_mod1[[1]][1,5]
+ifelse(p_valor<0.05, "Rechazo H0","NO rechazo H0") #se cumple con varias repeticiones
+```
+
+```{r}
+#Prueba de Tukey de comparacion entre medias
+TukeyHSD(mod1,"variedad")
+
+#Podemos concluir que todos los genotipos tienen un contenido diferente de canabinoides
+```
+```{r}
+#Supuestos del modelo
+
+#Normalidad de residuales - Shapiro si p_valor>0,05 son normales
+shapiro.test(mod1$residuals)
+
+#Igualdad de varianzas - Bartlett si p_valor>0,05 son normales
+bartlett.test(mod1$residuals, datos$variedad)
+
+#Independecia - dependencia espacial con Indice de Moran
+```
+
+#Dependencia espacial en los residuales usando R y Phyton
+
+
+##Matriz de distancia
+
+```{r}
+dist_matrix <- as.matrix(dist(cbind(datos$x,datos$y)))
+```
+##Inversa de la distancia
+
+```{r}
+dist_matrix_inv <- 1 / dist_matrix
+diag(dist_matrix_inv) <- 0
+```
+
+## Indice de Moran
+
+```{r}
+Moran.I(mod1$residuals, dist_matrix_inv) 
+```
+#Hay autocorrelacion espacial entre las variables, sin embargo, es minima y puede ser despreciable
